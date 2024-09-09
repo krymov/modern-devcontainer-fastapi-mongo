@@ -1,3 +1,7 @@
+.ruff_cache/
+
+
+
 # General
 .DS_Store
 .AppleDouble
