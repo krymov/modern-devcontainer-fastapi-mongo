@@ -1,3 +1,4 @@
+from app.internal.db import init_db
 from fastapi import FastAPI
 
 

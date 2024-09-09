@@ -15,7 +15,7 @@ class Settings(BaseSettings):
 
 
 class EnvSettings(Settings):
-    MONGO_DB: str = Field(..., env="MONGO_DB", default="mongodb://localhost:27017")
+    MONGO_DB: str = Field(env="MONGO_DB", default="mongodb://localhost:27017")
 
     class Config:
         env_file = ".env"
