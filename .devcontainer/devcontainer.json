@@ -7,17 +7,59 @@
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
-    "ghcr.io/va-h/devcontainers-features/uv:1": {}
+    "ghcr.io/va-h/devcontainers-features/uv:1": {},
+    "ghcr.io/dhoeric/features/hadolint:1": {}
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // This can be used to network with other containers or the host.
   "forwardPorts": [
     27017
-  ]
+  ],
+  "postCreateCommand": "uv sync --dev",
+  "postStartCommand": "uv run pre-commit install",
+  "remoteUser": "vscode",
   // Use 'postCreateCommand' to run commands after the container is created.
   // "postCreateCommand": "pip install --user -r requirements.txt",
   // Configure tool-specific properties.
-  // "customizations": {},
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "charliermarsh.ruff",
+        "codezombiech.gitignore",
+        "eamodio.gitlens",
+        "exiasr.hadolint",
+        "kevinrose.vsc-python-indent",
+        "mosapride.zenkaku",
+        "ms-azuretools.vscode-docker",
+        "ms-python.python",
+        "njpwerner.autodocstring",
+        "oderwat.indent-rainbow",
+        "pkief.material-icon-theme",
+        "shardulm94.trailing-spaces",
+        "usernamehw.errorlens",
+        "yzhang.markdown-all-in-one"
+      ],
+      "settings": {
+        // "python.defaultInterpreterPath": "/root/.local/share/uv/python",
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff",
+          "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit"
+          },
+          "editor.formatOnSave": true
+        },
+        "files.insertFinalNewline": true,
+        "files.trimTrailingWhitespace": true,
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+          "zsh": {
+            "path": "/bin/zsh"
+          }
+        }
+      }
+    }
+  }
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
   // "postCreateCommand": "./.devcontainer/post-create.sh",
   // "remoteUser": "developer",
