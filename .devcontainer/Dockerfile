@@ -1,17 +1,53 @@
-FROM mcr.microsoft.com/devcontainers/python:1-3.12-bullseye
+FROM ubuntu:22.04
 
-ENV PYTHONUNBUFFERED 1
+# Arguments to set UID, GID, and username
+ARG LOCAL_UID=1000
+ARG LOCAL_GID=1000
+ARG DEV_USERNAME=developer
+
+
+
+# Use Bash as the default shell
+SHELL ["/bin/bash", "-c"]
+
+# Update the package list and install necessary packages
+# hadolint ignore=DL3008
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    fish \
+    build-essential \
+    wget \
+    git \
+    curl \
+    sudo \
+    screen \
+    openssh-client \
+    && rm -rf /var/lib/apt/lists/*  # Clean up to reduce the image size
+
+
+# Create a group and user with the specified UID and GID
+RUN groupadd -g ${LOCAL_GID} ${DEV_USERNAME} && \
+    useradd -l -m -u ${LOCAL_UID} -g ${LOCAL_GID} ${DEV_USERNAME} && \
+    usermod -aG sudo ${DEV_USERNAME} && \
+    echo "${DEV_USERNAME} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${DEV_USERNAME}
+
+# FROM mcr.microsoft.com/devcontainers/python:1-3.12-bullseye
+
+# ENV PYTHONUNBUFFERED 1
 
 # ARG UID
 # ARG GID
 # ARG USERNAME=developer
 
-
-# RUN groupadd -g ${GID} ${USERNAME} && \
-#     useradd -m -u ${UID} -g ${GID} -s /usr/bin/fish ${USERNAME} && \
+# RUN if id -u ${UID} >/dev/null 2>&1; then \
+#   EXISTING_USER=$(getent passwd ${UID} | cut -d: -f1) && \
+#   usermod -l ${USERNAME} ${EXISTING_USER} && \
+#   groupmod -n ${USERNAME} $(id -gn ${EXISTING_USER}); \
+#     else \
+#   groupadd -g ${GID} ${USERNAME} && \
+#   useradd -m -u ${UID} -g ${GID} -s /usr/bin/fish ${USERNAME}; \
+#     fi && \
 #     usermod -aG root ${USERNAME} && \
-#     usermod -aG sudo ${USERNAME} && \
-#     echo "${USERNAME} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${USERNAME}
+#     usermod -aG sudo ${USERNAME}
 
 # USER ${USERNAME}
 

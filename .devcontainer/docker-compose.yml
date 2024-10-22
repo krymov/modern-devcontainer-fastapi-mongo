@@ -5,9 +5,14 @@ services:
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
-
+      args:
+        UID: ${UID}
+        GID: ${GID}
+    env_file: ./.env
     volumes:
       - ../..:/workspaces:cached
+      - ${HOME}/.ssh:/mnt/config/.ssh:cached
+      - ${HOME}/.gitconfig:/mnt/config/.gitconfig:cached
 
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
@@ -19,10 +24,28 @@ services:
     # (Adding the "ports" property to this file will not forward from a Codespace.)
 
   db:
-    image: mongo:latest
+    image: mongodb/mongodb-atlas-local
     restart: unless-stopped
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME=user
+      - MONGODB_INITDB_ROOT_PASSWORD=pass
+    ports:
+      - 27017:27017
+
+    # image: mongodb/atlas:latest
+    # command: |
+    #   /bin/bash -c "atlas deployments setup --type local --port 27017 --bindIpAll --mdbVersion 6.0 --username root --password root --force && tail -f /dev/null"
+    # environment:
+    # - ATLAS_STORAGE_ENGINE=wiredTiger
+    # - ATLAS_REPL_SET_NAME=atlas
+    # - ATLAS_SERVER_KEY=/data/mongodb/certs/server.pem
+    # - ATLAS_CLIENT_CERT=/data/mongodb/certs/client.pem
+    # - ATLAS_REPLICA_SET_MODE=primary
     volumes:
-      - mongodb-data:/data/db
+      - mongodb-atlas-data:/data/mongodb
+
+    # ports:
+    # - "27017:27017"
 
     # Uncomment to change startup options
     # environment:
@@ -34,4 +57,4 @@ services:
     # (Adding the "ports" property to this file will not forward from a Codespace.)
 
 volumes:
-  mongodb-data:
+  mongodb-atlas-data:
